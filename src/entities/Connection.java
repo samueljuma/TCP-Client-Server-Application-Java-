@@ -15,7 +15,7 @@ public class Connection {
     private ArrayList<LogEntry> logList;
     
     public void connection(Socket clientSocket, ArrayList<Student> studentList,ArrayList<LogEntry> logList){
-        
+               
     }
     
 }
