@@ -2,6 +2,9 @@ package entities;
 
 import entities.TCPClient.ClientHandler;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -43,4 +46,34 @@ public class TCPServer {
         }
 
     }
+    public class Connection {
+    
+    //variables
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private ArrayList<Student> studentList;
+    private ArrayList<LogEntry> logList;
+    
+    public void connection(Socket clientSocket, ArrayList<Student> studentList,ArrayList<LogEntry> logList){
+               
+    }
+    
+}
+    public class WriteToFile {
+    
+    //variables
+    private PrintWriter prn;
+    private ArrayList<Student> studentList;
+    private ArrayList<LogEntry> logList;
+    private String studentFileName;
+    private String logFileName;
+
+    public WriteToFile(ArrayList<Student> studentList,ArrayList<LogEntry> logList) {
+        this.studentList = studentList;
+        this.logList = logList;
+    }
+    
+    
+    
+}
 }
