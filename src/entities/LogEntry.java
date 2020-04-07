@@ -1,7 +1,9 @@
 
 package entities;
 
-public class LogEntry {
+import java.io.Serializable;
+
+public class LogEntry implements Serializable, Comparable<Object>{
     
     //variables
     private String studentNumber;
@@ -57,6 +59,11 @@ public class LogEntry {
     @Override
     public String toString() {
         return studentNumber+" "+dateTime;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
     
     

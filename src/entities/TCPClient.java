@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class TCPClient {
     
-    private static int portNumber;
+    private static final int portNumber =5000;
     private static final String SERVERNAME = "localhost";
 
     //
@@ -17,11 +17,11 @@ public class TCPClient {
 
     // main method
     public static void main(String[] args) {
-        portNumber = 5000;
         
+        //connect
         try {
             Socket client = new Socket(SERVERNAME, portNumber);
-            System.out.println("connected");
+//            System.out.println("connected");
 
             //take input from terminal
             input = new DataInputStream(System.in);
@@ -33,11 +33,43 @@ public class TCPClient {
             System.out.println("No connection");
         }
         
+        //Menu
+        menu();
+       
+        
         try {
+            String studentNumber;
+            String pinCode;
             String msg = "";
-            while (!msg.equals("Over")) {                
+            while (!msg.equals("3")) {  
                 msg = input.readLine();
-                out.writeUTF(msg);                
+                switch (msg) {
+                    case "1":              
+                        out.writeUTF("Student is about to log in");
+                        System.out.println("Enter Student Number: ");
+                        studentNumber = input.readLine();
+                        System.out.println("Enter 4 digit Pin Code: ");
+                        pinCode = input.readLine();
+                        System.out.println("*******"+new Student(studentNumber,Integer.parseInt(pinCode))+ " loged in********\n");
+                        menu();
+                        break;
+                    case "2":                        
+                        out.writeUTF("New Student");
+                        System.out.println("Enter Student Number: ");
+                        studentNumber = input.readLine();
+                        System.out.println("Enter 4 digit Pin Code: ");
+                        pinCode = input.readLine();
+                        System.out.println("*******"+new Student(studentNumber,Integer.parseInt(pinCode))+" exists**********\n");
+                        menu();
+                        break;
+                    case "3":
+                        System.out.println("Exiting...");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Try Again: ");
+                        break;
+                }
+                               
             }
             
         } catch (IOException e) {
@@ -52,6 +84,15 @@ public class TCPClient {
             
         }
         
+    }
+    
+    public static void menu(){
+                System.out.println("PLEASE MAKE YOUR SELECTION"
+                + "\n**************************"
+                + "\n1. Current Student"
+                + "\n2. New Student"
+                + "\n3. Exit"
+                + "\nEnter your option: ");
     }
     
     public class ClientHandler implements Runnable {
@@ -74,7 +115,7 @@ public class TCPClient {
                 String msg = "";
                 while (!msg.equals("Over")) {                    
                     msg = in.readUTF();
-                    System.out.println("Client says " + msg);
+                    System.out.println(msg);
                     out.writeUTF("Thank you for connecting to " + client.getLocalSocketAddress());
                     
                 }

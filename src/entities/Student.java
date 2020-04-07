@@ -1,7 +1,9 @@
 
 package entities;
 
-public class Student {
+import java.io.Serializable;
+
+public class Student implements Serializable{
     // variables
     private String studentNumber;
     private int pinCode;
