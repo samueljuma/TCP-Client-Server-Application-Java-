@@ -1,15 +1,15 @@
-
 package entities;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import entities.TCPClient.ClientHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class TCPServer {
-    
+
     //variables
     private static int serverPort;
     private static ArrayList<Student> studentList;
@@ -17,43 +17,30 @@ public class TCPServer {
     private String studentFileName;
     private String logFileName;
     
+    private static final int MAXIMUM_NO_OF_CLIENTS=4;
+    
+    private static TCPClient tCPClient = new TCPClient();
+
+    private static ArrayList<ClientHandler> clients = new ArrayList<>();
+    private static ExecutorService pool = Executors.newFixedThreadPool(MAXIMUM_NO_OF_CLIENTS);
+
     //main method
-    public static void main(String[] args) {
-        serverPort=5000;
-        Socket server;
-        DataInputStream in;
-        DataOutputStream out;
-        try {
-            ServerSocket serverSocket = new ServerSocket(serverPort);
-            System.out.println("Server started");
+    public static void main(String[] args) throws IOException {
+        serverPort = 5000;
+        Socket client;
+      
+        ServerSocket serverSocket = new ServerSocket(serverPort);
+        System.out.println("Server started");
+        while (true) {
             System.out.println("Waiting for a client...");
-            server = serverSocket.accept();
+            client = serverSocket.accept();
             System.out.println("Client accepted");
+            ClientHandler clientThread = tCPClient.new ClientHandler(client);
             
-            //take input from client
-            in = new DataInputStream(new BufferedInputStream(server.getInputStream()));
-           
-            String msg="";
-            while (!msg.equals("over")) {   
-                msg = in.readUTF();
-            System.out.println("Client says "+msg);
-                
-            }
-            
-            //send output to socket
-            out = new DataOutputStream(server.getOutputStream());
-            out.writeUTF("Thank you for connecting to "+server.getLocalSocketAddress());
-            
-            
-            //close connection
-//            in.close();
-            server.close();
-            
-            System.out.println("server closed");
-            
-        } catch (IOException ex) {
-            
+            clients.add(clientThread);
+            pool.execute(clientThread);
+
         }
-        
+
     }
 }
