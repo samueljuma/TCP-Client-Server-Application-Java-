@@ -22,6 +22,12 @@ public class TCPServer {
     private static ArrayList<LogEntry> logList;
     private String studentFileName;
     private String logFileName;
+    
+    String[] serverResponses ={"******Student exists******"
+            + "", "******Un-Registered Student******", "******Invalid Pin******"
+            + "", "******Welcome******","******Student Created******"};
+    
+    static final TCPClient CLIENT = new TCPClient();
 
     private static final int MAXIMUM_NO_OF_CLIENTS = 4;
 
@@ -33,7 +39,8 @@ public class TCPServer {
     //main method
     public static void main(String[] args) throws IOException {
         Socket client;
-
+        studentList = TCPClient.STUDENTS_ARRAY_LIST;
+        logList = TCPClient.LOG_ENTRY__ARRAY_LIST;
         ServerSocket serverSocket = new ServerSocket(serverPort);
         System.out.println("Server started");
         while (true) {
@@ -45,26 +52,7 @@ public class TCPServer {
             clients.add(clientThread);
 
             pool.execute(clientThread);
-
-            studentList = new ArrayList<>();
-            studentList.add(new Student("S0001", 54673));
-            studentList.add(new Student("S0002", 54673));
-            studentList.add(new Student("S0003", 54673));
-            studentList.add(new Student("S0004", 54673));
-
-            logList = new ArrayList<>();
-            logList.add(new LogEntry("S0001", "07/04/2020-02:16:34"));
-            logList.add(new LogEntry("S0002", "07/04/2020-02:16:34"));
-            logList.add(new LogEntry("S0003", "07/04/2020-02:16:34"));
             
-            WriteToFile writeToFile = new TCPServer().new WriteToFile(studentList, logList);
-
-            try {
-                Connection connection = new TCPServer().new Connection(client, studentList, logList);
-            } catch (ClassNotFoundException ex) {
-
-            }
-
         }
 
     }
@@ -77,7 +65,7 @@ public class TCPServer {
         private ArrayList<Student> mStudentList;
         private ArrayList<LogEntry> mLogList;
 
-        public Connection(Socket clientSocket, ArrayList<Student> mStudentList, ArrayList<LogEntry> mLogList) throws ClassNotFoundException {
+        public Connection(ArrayList<Student> mStudentList, ArrayList<LogEntry> mLogList) throws ClassNotFoundException {
 
             this.mStudentList = mStudentList;
             this.mLogList = mLogList;
@@ -92,10 +80,13 @@ public class TCPServer {
 
                 //
                 in = new ObjectInputStream(new FileInputStream("./src/data/Studententry.bin"));
-                for (Student mStudentList1 : mStudentList) {
-                    Student student = (Student) in.readObject();
-//                    System.out.println(student);
+                    Student student;
+                for (Student mStudentList1 : this.mStudentList) {
+                    student= (Student) in.readObject();
                 }
+                     
+//                    System.out.println(student);
+                
                 in.close();
                 
                 // logEntries
@@ -110,7 +101,7 @@ public class TCPServer {
                 in = new ObjectInputStream(new FileInputStream("./src/data/Logentry.bin"));
                 for (LogEntry logEntryList : mLogList) {
                     LogEntry logEntry = (LogEntry) in.readObject();
-                    System.out.println(logEntry);
+//                    System.out.println(logEntry);
                 }
                 in.close();
             } catch (IOException ex) {
@@ -118,6 +109,15 @@ public class TCPServer {
             }
 
         }
+
+        public ArrayList<LogEntry> getmLogList() {
+            return mLogList;
+        }
+
+        public ArrayList<Student> getmStudentList() {
+            return mStudentList;
+        }
+        
 
     }
 
@@ -147,10 +147,27 @@ public class TCPServer {
             }
             prn.flush();
             prn.close();
-            
-            System.out.println("File written successfully");
 
         }
 
+    }
+    public boolean isContained(ArrayList<Student> students, Student student){
+        for(int i=0;i<students.size();i++){
+            if(student.getStudentNumber().equals(students.get(i).getStudentNumber()) && student.getPinCode()==students.get(i).getPinCode())
+                return true;
+            }
+        
+        return false;
+    }
+    public boolean isPincodeValid(String pincode){
+        try {
+            Integer.parseInt(pincode);
+            if(pincode.length()!= 4){
+            return false;
+        }            
+        } catch (NumberFormatException e) {
+            return false;
+        }        
+        return true;
     }
 }
